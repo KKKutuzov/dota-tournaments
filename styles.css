@@ -245,19 +245,23 @@ tr.lead td.p { color: var(--cyan); font-weight: 800; }
 .tname:hover { color: var(--cyan); }
 
 /* ---------------- сетка плей-офф ---------------- */
-.bracket-tour { margin-bottom: 18px; }
-.bracket-tour h4 { margin: 0 0 10px; font-family: "Space Grotesk", sans-serif; font-size: 14px; color: var(--muted); }
-.bracket { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
-.bracket-col { display: flex; flex-direction: column; justify-content: space-around; gap: 12px; min-width: 190px; }
-.bracket-round { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--faint); text-align: center; }
-.bx { background: var(--panel); border: 1px solid var(--line); border-radius: 11px; overflow: hidden; }
+.bracket-body { margin-top: 14px; }
+.bracket-body[hidden] { display: none; }
+.bracket-tour { margin-bottom: 24px; }
+.bracket-tour h4 { margin: 0 0 12px; font-family: "Space Grotesk", sans-serif; font-size: 15px; }
+.bracket { display: flex; gap: 18px; overflow-x: auto; padding-bottom: 8px; }
+.bracket-col { flex: 1 1 0; display: flex; flex-direction: column; justify-content: space-around; gap: 14px; min-width: 175px; }
+.bracket-round { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--cyan); text-align: center; margin-bottom: 2px; }
+.bx { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; transition: border-color .15s; }
+.bx:hover { border-color: var(--line-2); }
 .bx.hypo { border-style: dashed; opacity: .8; }
-.bx-team { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 11px; font-size: 13px; font-weight: 700; }
+.bx-team { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 14px; font-size: 14px; font-weight: 700; }
 .bx-team + .bx-team { border-top: 1px solid var(--line); }
-.bx-team b { font-family: var(--mono); color: var(--muted); }
+.bx-team b { font-family: var(--mono); color: var(--muted); font-size: 15px; }
 .bx-team.won { color: var(--win); } .bx-team.won b { color: var(--win); }
 .bx-team.me { box-shadow: inset 3px 0 0 var(--me); }
 .bx-team .tbd { color: var(--faint); font-weight: 600; font-style: italic; }
+@media (min-width: 720px) { .bracket { overflow-x: visible; } }
 
 /* ---------------- модалка команды ---------------- */
 .modal { position: fixed; inset: 0; z-index: 100; display: flex; align-items: flex-start; justify-content: center; padding: 5vh 16px; background: rgba(3, 5, 9, .72); backdrop-filter: blur(4px); overflow-y: auto; }

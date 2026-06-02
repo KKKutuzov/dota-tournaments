@@ -140,17 +140,15 @@ function computeHypothetical(matches) {
     if (!my) continue;
     const bracket = matches.filter((m) => m.tournamentId === t.id && isBracketStage(m.stage) && m.num);
     if (!bracket.length) continue;
-    const seen = new Set();
+    // теоретический путь: только продвижение по победам (матч за 3 место не берём)
     const queue = bracket.filter((m) => m.team1 === my || m.team2 === my).map((m) => +m.num);
     while (queue.length) {
       const n = queue.shift();
-      for (const kind of ["WIN", "LOSE"]) {
-        for (const m of bracket) {
-          const side = refEq(m.team1, kind, n) ? 1 : (refEq(m.team2, kind, n) ? 2 : 0);
-          if (!side || m.hypoMine || m.team1 === my || m.team2 === my) continue;
-          m.hypoMine = true; m.hypoSide = side; m.hypoVia = kind; m.hypoTeam = my;
-          if (kind === "WIN") queue.push(+m.num);   // цепочку продолжаем только по победам
-        }
+      for (const m of bracket) {
+        const side = refEq(m.team1, "WIN", n) ? 1 : (refEq(m.team2, "WIN", n) ? 2 : 0);
+        if (!side || m.hypoMine || m.team1 === my || m.team2 === my) continue;
+        m.hypoMine = true; m.hypoSide = side; m.hypoVia = "WIN"; m.hypoTeam = my;
+        queue.push(+m.num);
       }
     }
   }
@@ -328,7 +326,7 @@ function matchCard(m, now) {
   let tag = "";
   if (skip) tag = `<span class="tag skip">⏭ замена · играю в ${esc(TOUR_SHORT[m.conflictWith.tournamentId] || "")}</span>`;
   else if (showPriority && m.clash) tag = `<span class="tag clash">⚠ накладка по времени</span>`;
-  else if (hypo) tag = m.hypoVia === "WIN" ? `<span class="tag hypo">🔮 если пройду дальше</span>` : `<span class="tag hypo">🥉 если проиграю</span>`;
+  else if (hypo) tag = `<span class="tag hypo">🔮 если пройду дальше</span>`;
   else if (showPriority && realMine) tag = `<span class="tag play">★ мой матч</span>`;
 
   return `<article class="card ${mine ? "mine" : ""} ${hypo ? "hypo" : ""} ${st === "live" ? "is-live" : ""} ${skip ? "skip" : ""}">
@@ -380,7 +378,7 @@ function renderBrackets() {
       <div class="bracket">${rounds.map((ms) =>
         `<div class="bracket-col"><div class="bracket-round">${esc(ms[0].stage)}</div>${ms.map(bracketCard).join("")}</div>`).join("")}</div></div>`;
   }
-  return `<section class="standings"><button class="standings-btn">🏆 Сетка плей-офф <span class="chev">▾</span></button><div class="standings-body" hidden>${body}</div></section>`;
+  return `<section class="standings"><button class="standings-btn">🏆 Сетка плей-офф <span class="chev">▾</span></button><div class="bracket-body" hidden>${body}</div></section>`;
 }
 function bxSide(m, side) {
   const raw = side === 1 ? m.team1 : m.team2, sc = m.score;
