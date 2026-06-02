@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Турниры · Dota 2</title>
+  <meta name="description" content="Расписание турниров по Dota 2: когда матч, какие команды, счёт и трансляция." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <meta name="theme-color" content="#0a0c11" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="aurora"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"><span></span></div>
+      <div class="brand-text">
+        <h1>Турниры по Dota 2</h1>
+        <p>Расписание матчей · группы и плей-офф</p>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button id="myModeBtn" class="mode-switch" aria-pressed="false">
+        <span class="track"><span class="knob"></span></span>
+        <span class="ms-label">Мои матчи</span>
+      </button>
+      <button id="refreshBtn" class="btn" title="Обновить данные">
+        <svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Обновить</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="meChips" class="me-chips" hidden></div>
+  <section id="myAlert" class="alert" hidden></section>
+
+  <section id="hero" class="hero">
+    <div class="hero-skeleton">Загружаю расписание…</div>
+  </section>
+
+  <nav class="filters" id="filters" hidden>
+    <div class="segmented" id="tournamentTabs"></div>
+    <div class="filters-right">
+      <button class="chip-toggle" id="onlyUpcoming" aria-pressed="false">Только предстоящие</button>
+      <div class="search">
+        <svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="search" id="searchInput" placeholder="Поиск команды" />
+      </div>
+    </div>
+  </nav>
+
+  <main id="content" class="content"></main>
+
+  <footer class="footer">
+    <div id="statusLine">—</div>
+    <div id="leagueLinks" class="league-links"></div>
+  </footer>
+
+  <script src="parser.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
