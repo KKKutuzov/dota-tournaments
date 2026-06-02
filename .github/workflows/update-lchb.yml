@@ -1,0 +1,44 @@
+name: Обновление расписания ЛЧБ
+
+# Запускается по расписанию и вручную. Пересобирает data/lchb.json свежими
+# данными с сайта ЛЧБ и коммитит изменения — GitHub Pages пере-публикует сайт.
+
+on:
+  schedule:
+    - cron: "0 7,11,15,19 * * *"   # время в UTC ≈ 10,14,18,22 по МСК
+  workflow_dispatch: {}            # кнопка "Run workflow" вручную
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-lchb
+  cancel-in-progress: false
+
+jobs:
+  update-lchb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установка зависимостей
+        run: pip install -r requirements.txt
+
+      - name: Сбор данных ЛЧБ
+        run: python scrape_lchb.py
+
+      - name: Коммит обновлённого lchb.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/lchb.json
+          if git diff --staged --quiet; then
+            echo "Изменений нет — пропускаю коммит."
+          else
+            git commit -m "auto: обновление расписания ЛЧБ"
+            git push
+          fi
