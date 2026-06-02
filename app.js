@@ -278,7 +278,7 @@ function renderContent(now) {
   const root = $("#content");
   if (state.source === "fail") { root.innerHTML = `<div class="error">⚠️ Не удалось загрузить расписание.<br>Проверь интернет и нажми «Обновить».</div>`; return; }
   const list = filteredMatches();
-  if (!list.length) { root.innerHTML = `<div class="empty">Ничего не найдено по текущим фильтрам.</div>` + renderStandings(); bindStandings(root); return; }
+  if (!list.length) { root.innerHTML = `<div class="empty">Ничего не найдено по текущим фильтрам.</div>` + renderBrackets() + renderStandings(); bindStandings(root); return; }
 
   const sorted = list.slice().sort((a, b) => (a.ms == null) - (b.ms == null) || (a.ms || 0) - (b.ms || 0));
   const groups = new Map();
@@ -289,6 +289,7 @@ function renderContent(now) {
   for (const [k, ms] of groups) {
     html += `<section class="day"><div class="day-head"><h2>${esc(fmtDay(ms[0]))}</h2><span class="cnt">${ms.length}</span>${k === todayKey ? '<span class="badge-today">сегодня</span>' : ""}</div><div class="grid">${ms.map((m) => matchCard(m, now)).join("")}</div></section>`;
   }
+  html += renderBrackets();
   html += renderStandings();
   root.innerHTML = html;
   bindStandings(root);
@@ -311,6 +312,8 @@ function matchCard(m, now) {
   const m2 = (state.personal && isMyTeam(m.tournamentId, m.team2)) || h2;
   const name1 = h1 ? m.hypoTeam : prettyTeam(m.team1);
   const name2 = h2 ? m.hypoTeam : prettyTeam(m.team2);
+  const ct1 = h1 ? m.hypoTeam : (isPlaceholder(m.team1) ? "" : m.team1);
+  const ct2 = h2 ? m.hypoTeam : (isPlaceholder(m.team2) ? "" : m.team2);
   const showPriority = realMine && st !== "finished";
   const skip = showPriority && m.skip;
 
@@ -335,9 +338,9 @@ function matchCard(m, now) {
       <span class="time">${esc(m.timeStr || "—")} <small>МСК</small></span>
     </div>
     <div class="row">
-      <div class="side"><span class="mono" style="background:${teamColor(h1 ? m.hypoTeam : m.team1)}">${initials(h1 ? m.hypoTeam : m.team1)}</span><span class="nm ${h1 ? "" : tbd(m.team1)} ${won1 ? "won" : ""} ${lose1 ? "lost" : ""}">${esc(name1)}</span>${m1 ? mark : ""}</div>
+      <div class="side"><span class="mono" style="background:${teamColor(h1 ? m.hypoTeam : m.team1)}">${initials(h1 ? m.hypoTeam : m.team1)}</span><span class="nm ${h1 || !isPlaceholder(m.team1) ? "tname" : tbd(m.team1)} ${won1 ? "won" : ""} ${lose1 ? "lost" : ""}"${ct1 ? ` data-team="${esc(ct1)}"` : ""}>${esc(name1)}</span>${m1 ? mark : ""}</div>
       ${scHtml}
-      <div class="side r"><span class="mono" style="background:${teamColor(h2 ? m.hypoTeam : m.team2)}">${initials(h2 ? m.hypoTeam : m.team2)}</span><span class="nm ${h2 ? "" : tbd(m.team2)} ${won2 ? "won" : ""} ${lose2 ? "lost" : ""}">${esc(name2)}</span>${m2 ? mark : ""}</div>
+      <div class="side r"><span class="mono" style="background:${teamColor(h2 ? m.hypoTeam : m.team2)}">${initials(h2 ? m.hypoTeam : m.team2)}</span><span class="nm ${h2 || !isPlaceholder(m.team2) ? "tname" : tbd(m.team2)} ${won2 ? "won" : ""} ${lose2 ? "lost" : ""}"${ct2 ? ` data-team="${esc(ct2)}"` : ""}>${esc(name2)}</span>${m2 ? mark : ""}</div>
     </div>
     <div class="card-foot">${tag}${st !== "finished" ? streamLink(m.stream) : ""}${detailLink(m)}</div>
   </article>`;
@@ -353,11 +356,100 @@ function renderStandings() {
   for (const { tid, tournament, group, rows } of byKey.values()) {
     body += `<div class="stable"><h3>${esc(TOUR_SHORT[tid] || tournament)} · ${esc(group)}</h3><table>
       <thead><tr><th>#</th><th style="text-align:left">Команда</th><th>В</th><th>П</th><th>Карты</th><th>Очки</th></tr></thead>
-      <tbody>${rows.map((r) => { const me = state.personal && isMyTeam(r.tournamentId, r.team); return `<tr class="${me ? "mine" : ""} ${r.place === "1" ? "lead" : ""}"><td class="p">${esc(r.place)}</td><td class="t">${esc(r.team)}${me ? ' <span class="me-mark">Я</span>' : ""}</td><td>${esc(r.w)}</td><td>${esc(r.l)}</td><td>${esc(r.maps)}</td><td>${esc(r.pts)}</td></tr>`; }).join("")}</tbody>
+      <tbody>${rows.map((r) => { const me = state.personal && isMyTeam(r.tournamentId, r.team); return `<tr class="${me ? "mine" : ""} ${r.place === "1" ? "lead" : ""}"><td class="p">${esc(r.place)}</td><td class="t"><span class="tname" data-team="${esc(r.team)}">${esc(r.team)}</span>${me ? ' <span class="me-mark">Я</span>' : ""}</td><td>${esc(r.w)}</td><td>${esc(r.l)}</td><td>${esc(r.maps)}</td><td>${esc(r.pts)}</td></tr>`; }).join("")}</tbody>
     </table></div>`;
   }
   return `<section class="standings"><button class="standings-btn">Турнирные таблицы (${byKey.size}) <span class="chev">▾</span></button><div class="standings-body" hidden>${body}</div></section>`;
 }
+
+/* ================= сетка плей-офф ================= */
+function roundKey(ms) { return Math.min(...ms.map((m) => +m.num || 999)); }
+function renderBrackets() {
+  const tids = TOURNAMENTS.map((t) => t.id).filter((id) =>
+    (state.filterTournament === "all" || state.filterTournament === id) &&
+    state.matches.some((m) => m.tournamentId === id && isBracketStage(m.stage) && m.num));
+  if (!tids.length) return "";
+  let body = "";
+  for (const tid of tids) {
+    const bm = state.matches.filter((m) => m.tournamentId === tid && isBracketStage(m.stage) && m.num);
+    const byStage = new Map();
+    for (const m of bm) { if (!byStage.has(m.stage)) byStage.set(m.stage, []); byStage.get(m.stage).push(m); }
+    const rounds = [...byStage.values()].map((ms) => ms.sort((a, b) => (+a.num) - (+b.num)))
+      .sort((a, b) => roundKey(a) - roundKey(b));
+    body += `<div class="bracket-tour"><h4>${esc(TOUR_SHORT[tid] || tid)}</h4>
+      <div class="bracket">${rounds.map((ms) =>
+        `<div class="bracket-col"><div class="bracket-round">${esc(ms[0].stage)}</div>${ms.map(bracketCard).join("")}</div>`).join("")}</div></div>`;
+  }
+  return `<section class="standings"><button class="standings-btn">🏆 Сетка плей-офф <span class="chev">▾</span></button><div class="standings-body" hidden>${body}</div></section>`;
+}
+function bxSide(m, side) {
+  const raw = side === 1 ? m.team1 : m.team2, sc = m.score;
+  const hyp = state.personal && m.hypoMine && m.hypoSide === side;
+  const name = hyp ? m.hypoTeam : raw;
+  const real = hyp ? m.hypoTeam : (isPlaceholder(raw) ? "" : raw);
+  const me = state.personal && (isMyTeam(m.tournamentId, raw) || hyp);
+  const won = sc.played && (side === 1 ? sc.a > sc.b : sc.b > sc.a);
+  const num = sc.played ? (side === 1 ? sc.a : sc.b) : "";
+  return `<div class="bx-team ${won ? "won" : ""} ${me ? "me" : ""}">
+    <span class="${real ? "tname" : "tbd"}"${real ? ` data-team="${esc(real)}"` : ""}>${esc(prettyTeam(name))}</span>
+    <b>${esc(num)}</b></div>`;
+}
+function bracketCard(m) {
+  const hypo = state.personal && m.hypoMine && !involvesMyTeam(m);
+  return `<div class="bx ${hypo ? "hypo" : ""}">${bxSide(m, 1)}${bxSide(m, 2)}</div>`;
+}
+
+/* ================= страница команды (модалка) ================= */
+function computeTeamStats(team) {
+  const ms = state.matches.filter((m) => m.team1 === team || m.team2 === team);
+  const played = ms.filter((m) => m.score.played).sort((a, b) => (a.ms || 0) - (b.ms || 0));
+  let w = 0, l = 0, mf = 0, ma = 0; const form = [];
+  for (const m of played) {
+    const t1 = m.team1 === team;
+    const my = t1 ? m.score.a : m.score.b, op = t1 ? m.score.b : m.score.a;
+    mf += my; ma += op; const win = my > op; win ? w++ : l++; form.push(win);
+  }
+  let streak = 0, sw = null;
+  for (let i = form.length - 1; i >= 0; i--) { if (sw === null) { sw = form[i]; streak = 1; } else if (form[i] === sw) streak++; else break; }
+  const upcoming = ms.filter((m) => !m.score.played && m.ms != null).sort((a, b) => a.ms - b.ms);
+  return { team, n: played.length, w, l, mf, ma, wr: played.length ? Math.round(w / played.length * 100) : 0, form, streak, sw, played: played.reverse(), upcoming };
+}
+function openTeamModal(team) {
+  const s = computeTeamStats(team);
+  const tid = (s.played[0] || s.upcoming[0] || {}).tournamentId;
+  const rowsUp = s.upcoming.map((m) => teamRow(m, team)).join("");
+  const rowsPl = s.played.map((m) => teamRow(m, team)).join("");
+  const formHtml = s.form.slice(-8).map((w) => `<span class="fdot ${w ? "w" : "l"}">${w ? "В" : "П"}</span>`).join("");
+  const streakTxt = s.streak ? `${s.streak} ${s.sw ? "побед" : "поражений"} подряд` : "—";
+  $("#modal .modal-card").innerHTML = `
+    <button class="modal-close" aria-label="Закрыть">✕</button>
+    <div class="modal-head">
+      <span class="mono" style="background:${teamColor(team)}">${initials(team)}</span>
+      <div><h3>${esc(prettyTeam(team))}</h3>${tid ? `<span class="modal-tour">${esc(TOUR_SHORT[tid] || "")}</span>` : ""}</div>
+    </div>
+    <div class="modal-stats">
+      <div class="stat"><b>${s.w}–${s.l}</b><i>победы–поражения</i></div>
+      <div class="stat"><b>${s.wr}%</b><i>винрейт</i></div>
+      <div class="stat"><b>${s.mf}:${s.ma}</b><i>карты</i></div>
+      <div class="stat"><b>${esc(streakTxt)}</b><i>серия</i></div>
+    </div>
+    ${s.form.length ? `<div class="modal-form">Форма: ${formHtml}</div>` : ""}
+    ${rowsUp ? `<div class="modal-sec">Предстоящие</div><div class="modal-list">${rowsUp}</div>` : ""}
+    ${rowsPl ? `<div class="modal-sec">Сыгранные</div><div class="modal-list">${rowsPl}</div>` : ""}`;
+  $("#modal").hidden = false;
+}
+function teamRow(m, team) {
+  const t1 = m.team1 === team, opp = t1 ? m.team2 : m.team1, sc = m.score;
+  let res = "";
+  if (sc.played) { const win = (t1 ? sc.a : sc.b) > (t1 ? sc.b : sc.a); res = `<span class="rdot ${win ? "w" : "l"}">${t1 ? sc.a : sc.b}:${t1 ? sc.b : sc.a}</span>`; }
+  else res = `<span class="rdot vs">${esc(m.timeStr || "—")}</span>`;
+  return `<div class="trow">
+    <span class="trow-d">${esc(m.dateStr || "—")}</span>
+    <span class="trow-o tname" data-team="${esc(opp)}">${esc(prettyTeam(opp))}</span>
+    <span class="trow-t">${esc(TOUR_SHORT[m.tournamentId] || "")}</span>
+    ${res}</div>`;
+}
+function closeModal() { const el = $("#modal"); if (el) el.hidden = true; }
 
 function renderStatus() {
   const time = state.loadedAt ? state.loadedAt.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }) : "—";
@@ -428,6 +520,13 @@ function bindEvents() {
   $("#onlyUpcoming").addEventListener("click", () => { state.onlyUpcoming = !state.onlyUpcoming; render(); });
   $("#searchInput").addEventListener("input", (e) => { state.search = e.target.value; renderContent(Date.now()); });
   $("#tournamentTabs").addEventListener("click", (e) => { const b = e.target.closest(".seg"); if (b) { state.filterTournament = b.dataset.tour; render(); } });
+  // клик по названию команды → страница команды
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-team]");
+    if (t) { openTeamModal(t.dataset.team); return; }
+    if (e.target.closest(".modal-close") || e.target.id === "modal") closeModal();
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
 }
 
 async function init() {

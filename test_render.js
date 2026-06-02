@@ -32,6 +32,8 @@ function fakeEl() {
 const document = {
   querySelector(sel) { return (els[sel] = els[sel] || fakeEl()); },
   querySelectorAll() { return []; },
+  addEventListener() {}, createElement() { return fakeEl(); },
+  body: fakeEl(), visibilityState: "visible", activeElement: null,
 };
 const localStorageStore = { dotaPersonalMode: "1" }; // тестируем режим «Мои матчи»
 const localStorage = {
@@ -74,9 +76,17 @@ setTimeout(() => {
     ["чипы 'мои команды' (режим Мои матчи)", chips.includes("me-chip") && chips.includes("SZW") && chips.includes("CA_UNLIMITED") && chips.includes("TeamSpirt")],
     ["ЛЧБ загружен из JSON (TeamSpirt в матчах)", content.includes("TeamSpirt")],
     ["приоритет: есть тег замены или 'мой матч'", content.includes("tag skip") || content.includes("tag play")],
+    ["сетка плей-офф отрисована", content.includes("class=\"bracket\"") && content.includes("class=\"bx ")],
+    ["команды кликабельны (data-team)", content.includes("data-team=")],
     ["нет личных 'ты/твои' в текстах", !/\bты\b|\bтвои\b|\bтвой\b|\bтвоя\b/i.test(content + hero + chips)],
     ["нет 'undefined' в выводе", !content.includes("undefined") && !hero.includes("undefined") && !chips.includes("undefined")],
   ];
+  // страница команды (модалка)
+  try {
+    ctx.openTeamModal("SZW");
+    const modal = els["#modal .modal-card"]._html;
+    checks.push(["модалка команды строится", modal.includes("винрейт") && modal.includes("SZW") && !modal.includes("undefined")]);
+  } catch (e) { checks.push(["модалка команды строится", false]); console.error(e); }
   let ok = true;
   for (const [name, pass] of checks) { console.log(`${pass ? "✅" : "❌"} ${name}`); if (!pass) ok = false; }
   console.log("\nДлина content:", content.length, "| hero:", hero.length);
