@@ -39,8 +39,16 @@ MONTHS_RU = ["", "января", "февраля", "марта", "апреля",
 OUT = Path(__file__).parent / "data" / "lchb.json"
 
 
+UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
+
+
 def fetch(url):
-    r = requests.get(url, timeout=45, headers={"User-Agent": "Mozilla/5.0 (lchb-scraper)"})
+    r = requests.get(url, timeout=45, headers={
+        "User-Agent": UA,
+        "Accept-Language": "ru,en;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    })
     r.raise_for_status()
     r.encoding = "utf-8"
     return r.text
@@ -213,9 +221,12 @@ def parse_standings(html):
 
 def main():
     print(f"Скачиваю ЛЧБ (лига {LEAGUE})…")
-    sched_html = fetch(f"{BASE}/schedule-group/")
-    matches = parse_matches(sched_html)
-    print(f"  матчей группы Изумруд: {len(matches)}")
+    try:
+        matches = parse_matches(fetch(f"{BASE}/schedule-group/"))
+        print(f"  матчей группы Изумруд: {len(matches)}")
+    except Exception as e:
+        print("  расписание группы недоступно:", e)
+        matches = []
 
     try:
         po_html = fetch(f"{BASE}/playoff-schemes/?league={LEAGUE_SLUG}")
@@ -242,6 +253,11 @@ def main():
         seen.add(key)
         uniq.append(m)
     uniq.sort(key=lambda m: (m["ms"] is None, m["ms"] or 0))
+
+    # не затираем прошлые данные, если выгрузка не удалась (напр. сайт заблокировал CI)
+    if not uniq:
+        print("Данных нет — lchb.json не перезаписан (сохранены прошлые).")
+        return 0
 
     data = {
         "tournament": "ЛЧБ · Весна 2026",
