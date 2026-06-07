@@ -130,6 +130,55 @@ def parse_matches(html, stage_prefix=""):
     return out
 
 
+def parse_playoff(html):
+    """Плей-офф ЛЧБ — виджет-сетка (t-box-stage). Матч = t-box-stage-vs, 2 строки команд."""
+    soup = BeautifulSoup(html, "html.parser")
+    out = []
+    for idx, blk in enumerate(soup.find_all(class_="t-box-stage-vs")):
+        rows = blk.find_all(class_="t-box-stage-vs__row")
+        if len(rows) < 2:
+            continue
+
+        def cell(row):
+            n = row.find(class_="t-box-stage-vs-row__name")
+            c = row.find(class_="t-box-stage-vs-row__count")
+            name = re.sub(r"\s*\[.*?\]\s*$", "", n.get_text(strip=True)) if n else ""
+            cnt = c.get_text(strip=True) if c else ""
+            return (name or "TBD"), cnt
+
+        t1, c1 = cell(rows[0])
+        t2, c2 = cell(rows[1])
+        score, played = parse_score(f"{c1}:{c2}")
+
+        # раунд (заголовок ближайшего предка-стадии)
+        stage = "Плей-офф"
+        anc = blk
+        for _ in range(8):
+            anc = anc.parent
+            if anc is None:
+                break
+            if "_round" in " ".join(anc.get("class", [])):
+                h = anc.find(class_="t-box-stage-header")
+                if h:
+                    stage = re.sub(r"\s+", " ", h.get_text(" ", strip=True))
+                break
+
+        date_el = blk.find(class_="t-box-stage-vs-row__date") or blk.find(class_="match-score__date")
+        ms, date_str, time_str = parse_dt(date_el.get_text(" ", strip=True) if date_el else "")
+
+        a = blk.find("a", href=MATCH_RE)
+        murl = (a["href"] if a and a["href"].startswith("http") else (ROOT + a["href"])) if a else ""
+        st = blk.find("a", href=STREAM_RE)
+        stream = st["href"] if st else ""
+
+        out.append({
+            "ms": ms, "dateStr": date_str, "timeStr": time_str, "stage": stage,
+            "num": idx + 1, "team1": t1, "team2": t2, "score": score, "played": played,
+            "stream": stream, "url": murl,
+        })
+    return out
+
+
 def parse_standings(html):
     """Турнирная таблица группы, в которой играет моя команда (надёжнее, чем гадать по лиге)."""
     soup = BeautifulSoup(html, "html.parser")
@@ -170,8 +219,7 @@ def main():
 
     try:
         po_html = fetch(f"{BASE}/playoff-schemes/?league={LEAGUE_SLUG}")
-        po = parse_matches(po_html, stage_prefix="Плей-офф · ")
-        # на странице плей-офф все блоки уже относятся к выбранной лиге
+        po = parse_playoff(po_html)
         print(f"  матчей плей-офф: {len(po)}")
         matches += po
     except Exception as e:

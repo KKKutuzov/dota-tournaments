@@ -74,7 +74,7 @@ async function loadJsonTournament(t, matches, standings) {
   for (const e of data.matches || []) {
     matches.push({
       tournamentId: t.id, tournament: t.name, discipline: t.discipline || "Dota 2",
-      stage: e.stage || "Группа", dateStr: e.dateStr || "", timeStr: e.timeStr || "", ms: e.ms ?? null,
+      stage: e.stage || "Группа", num: e.num || "", dateStr: e.dateStr || "", timeStr: e.timeStr || "", ms: e.ms ?? null,
       team1: e.team1, team2: e.team2, score: parseScore(e.score || ""), stream: e.stream || "", url: e.url || "",
     });
   }
@@ -129,7 +129,7 @@ function computeConflicts(matches) {
 
 /* Гипотетический путь по сетке: если моя команда проходит дальше — какие матчи её ждут.
    Слоты вида "WIN 7"/"LOSE 7" ссылаются на номер матча плей-офф. */
-function isBracketStage(stage) { return /финал|место|пл[еэ]й/i.test(stage || ""); }
+function isBracketStage(stage) { return /финал|место|пл[еэ]й|сетка|гранд/i.test(stage || ""); }
 function slotRef(s) { const m = norm(s).match(/^(WIN|LOSE)\s*(\d+)$/i); return m ? { kind: m[1].toUpperCase(), n: +m[2] } : null; }
 function refEq(s, kind, n) { const r = slotRef(s); return r && r.kind === kind && r.n === n; }
 

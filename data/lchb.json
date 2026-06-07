@@ -2,7 +2,7 @@
   "tournament": "ЛЧБ · Весна 2026",
   "league": "Изумруд",
   "team": "TeamSpirt",
-  "generatedAt": "2026-06-02T09:24:22.245442+03:00",
+  "generatedAt": "2026-06-07T08:41:27.720910+03:00",
   "matches": [
     {
       "ms": 1778931000000,
@@ -275,9 +275,9 @@
       "stage": "Группа A",
       "team1": "FINFACTORY",
       "team2": "LigaChad",
-      "score": "",
-      "played": false,
-      "stream": "",
+      "score": "1:2",
+      "played": true,
+      "stream": "https://www.twitch.tv/bcl_07/",
       "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/60423/"
     },
     {
@@ -287,9 +287,9 @@
       "stage": "Группа A",
       "team1": "GPBots",
       "team2": "TeamSpirt",
-      "score": "",
-      "played": false,
-      "stream": "",
+      "score": "0:2",
+      "played": true,
+      "stream": "https://www.twitch.tv/bcl_06",
       "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/60422/"
     },
     {
@@ -299,9 +299,9 @@
       "stage": "Группа A",
       "team1": "VTB",
       "team2": "MidoriKuma",
-      "score": "",
-      "played": false,
-      "stream": "",
+      "score": "1:2",
+      "played": true,
+      "stream": "https://www.twitch.tv/bcl_05",
       "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/60421/"
     },
     {
@@ -311,9 +311,9 @@
       "stage": "Группа A",
       "team1": "Московский Банк (МБ - Moscow Bank)",
       "team2": "VTB",
-      "score": "",
-      "played": false,
-      "stream": "",
+      "score": "1:2",
+      "played": true,
+      "stream": "https://www.twitch.tv/bcl_07/",
       "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/60428/"
     },
     {
@@ -323,9 +323,9 @@
       "stage": "Группа A",
       "team1": "TeamSpirt",
       "team2": "MidoriKuma",
-      "score": "",
-      "played": false,
-      "stream": "",
+      "score": "2:0",
+      "played": true,
+      "stream": "https://www.twitch.tv/bcl_06",
       "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/60427/"
     },
     {
@@ -335,52 +335,156 @@
       "stage": "Группа A",
       "team1": "GPBots",
       "team2": "FINFACTORY",
+      "score": "1:2",
+      "played": true,
+      "stream": "https://www.twitch.tv/bcl_05",
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/60426/"
+    },
+    {
+      "ms": 1781337600000,
+      "dateStr": "13 июня",
+      "timeStr": "11:00",
+      "stage": "Верхняя сетка R1",
+      "num": 1,
+      "team1": "TeamSpirt",
+      "team2": "GPBots",
       "score": "",
       "played": false,
       "stream": "",
-      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/60426/"
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/63349/"
+    },
+    {
+      "ms": 1781337600000,
+      "dateStr": "13 июня",
+      "timeStr": "11:00",
+      "stage": "Верхняя сетка R1",
+      "num": 2,
+      "team1": "MidoriKuma",
+      "team2": "Tochka",
+      "score": "",
+      "played": false,
+      "stream": "",
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/63350/"
+    },
+    {
+      "ms": 1781337600000,
+      "dateStr": "13 июня",
+      "timeStr": "11:00",
+      "stage": "Верхняя сетка R1",
+      "num": 3,
+      "team1": "VTB",
+      "team2": "FINFACTORY",
+      "score": "",
+      "played": false,
+      "stream": "",
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/63351/"
+    },
+    {
+      "ms": 1781337600000,
+      "dateStr": "13 июня",
+      "timeStr": "11:00",
+      "stage": "Верхняя сетка R1",
+      "num": 4,
+      "team1": "Московский Банк (МБ - Moscow Bank)",
+      "team2": "LigaChad",
+      "score": "",
+      "played": false,
+      "stream": "",
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/63352/"
+    },
+    {
+      "ms": 1781350200000,
+      "dateStr": "13 июня",
+      "timeStr": "14:30",
+      "stage": "Верхняя сетка R2",
+      "num": 5,
+      "team1": "Win 1",
+      "team2": "Win 2",
+      "score": "",
+      "played": false,
+      "stream": "",
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/63353/"
+    },
+    {
+      "ms": 1781350200000,
+      "dateStr": "13 июня",
+      "timeStr": "14:30",
+      "stage": "Верхняя сетка R2",
+      "num": 6,
+      "team1": "Win 3",
+      "team2": "Win 4",
+      "score": "",
+      "played": false,
+      "stream": "",
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/63354/"
+    },
+    {
+      "ms": 1781359200000,
+      "dateStr": "13 июня",
+      "timeStr": "17:00",
+      "stage": "Гранд финал",
+      "num": 7,
+      "team1": "Win 5",
+      "team2": "Win 6",
+      "score": "",
+      "played": false,
+      "stream": "",
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/63356/"
+    },
+    {
+      "ms": 1781359200000,
+      "dateStr": "13 июня",
+      "timeStr": "17:00",
+      "stage": "Матч за 3-е место",
+      "num": 8,
+      "team1": "Lose 5",
+      "team2": "Lose 6",
+      "score": "",
+      "played": false,
+      "stream": "",
+      "url": "https://dota.businesschampionsleague.com/vesna-2026/matches/63355/"
     }
   ],
   "standings": [
     {
       "group": "Группа A",
       "place": "1",
-      "team": "Московский Банк (МБ ...",
-      "games": "6",
-      "w": "5",
+      "team": "TeamSpirt",
+      "games": "7",
+      "w": "6",
       "l": "1",
-      "maps": "10 - 5",
-      "pts": "5"
+      "maps": "13 - 4",
+      "pts": "6"
     },
     {
       "group": "Группа A",
       "place": "2",
-      "team": "TeamSpirt",
-      "games": "5",
-      "w": "4",
-      "l": "1",
-      "maps": "9 - 4",
-      "pts": "4"
+      "team": "VTB",
+      "games": "7",
+      "w": "5",
+      "l": "2",
+      "maps": "12 - 7",
+      "pts": "5"
     },
     {
       "group": "Группа A",
       "place": "3",
-      "team": "VTB",
-      "games": "5",
-      "w": "4",
-      "l": "1",
-      "maps": "9 - 4",
-      "pts": "4"
+      "team": "Московский Банк (МБ ...",
+      "games": "7",
+      "w": "5",
+      "l": "2",
+      "maps": "11 - 7",
+      "pts": "5"
     },
     {
       "group": "Группа A",
       "place": "4",
       "team": "MidoriKuma",
-      "games": "5",
-      "w": "3",
-      "l": "2",
-      "maps": "7 - 5",
-      "pts": "3"
+      "games": "7",
+      "w": "4",
+      "l": "3",
+      "maps": "9 - 8",
+      "pts": "4"
     },
     {
       "group": "Группа A",
@@ -396,30 +500,30 @@
       "group": "Группа A",
       "place": "6",
       "team": "LigaChad",
-      "games": "6",
-      "w": "1",
+      "games": "7",
+      "w": "2",
       "l": "5",
-      "maps": "3 - 11",
-      "pts": "1"
+      "maps": "5 - 12",
+      "pts": "2"
     },
     {
       "group": "Группа A",
       "place": "7",
       "team": "FINFACTORY",
-      "games": "5",
-      "w": "1",
-      "l": "4",
-      "maps": "4 - 8",
-      "pts": "1"
+      "games": "7",
+      "w": "2",
+      "l": "5",
+      "maps": "7 - 11",
+      "pts": "2"
     },
     {
       "group": "Группа A",
       "place": "8",
       "team": "GPBots",
-      "games": "5",
+      "games": "7",
       "w": "1",
-      "l": "4",
-      "maps": "5 - 9",
+      "l": "6",
+      "maps": "6 - 13",
       "pts": "1"
     }
   ]
